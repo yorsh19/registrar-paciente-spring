@@ -1,0 +1,13 @@
+com\demo\controller\GeneralController.class
+com\demo\model\Ubigeo.class
+com\demo\mapper\PacienteMapper.class
+com\demo\model\Sexo.class
+com\demo\exceptions\ResourceNotFoundException.class
+com\demo\model\Parentesco.class
+com\demo\controller\PacienteController.class
+com\demo\repository\PacienteRepository.class
+com\demo\model\Paciente.class
+com\demo\SampleApplication.class
+com\demo\model\TipoDocumento.class
+com\demo\util\MyBatisUtil.class
+com\demo\mapper\GeneralMapper.class

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.mapper">
+
+	<!-- RESULT SEXO -->
+	<resultMap type="Sexo" id="resultSexo">
+		<id property="id_sexo" column="id_sexo" />
+		<result property="descripcion_sexo" column="descripcion_sexo" />
+		<result property="fl_estado" column="fl_estado" />
+	</resultMap>
+
+	<!-- RESULT TIPO DOCUMENTO -->
+	<resultMap type="com.demo.model.TipoDocumento" id="resultTipoDoc">
+		<id property="id_tipo_documento_identidad" column="id_tipo_documento_identidad" />
+		<result property="descripcion_tipo_documento_identidad" column="descripcion_tipo_documento_identidad" />
+		<result property="codigo_ieds" column="codigo_ieds" />
+		<result property="fl_estado" column="fl_estado" />
+	</resultMap>
+
+	<!-- RESULT UBIGEO -->
+	<resultMap type="com.demo.model.Ubigeo" id="resultUbigeo">
+		<id property="codigo_ubigeo" column="codigo_ubigeo" />
+		<result property="descripcion_departamento" column="descripcion_departamento" />
+		<result property="descripcion_provincia" column="descripcion_provincia" />
+		<result property="descripcion_distrito" column="descripcion_distrito" />
+		<result property="fl_estado" column="fl_estado" />
+		<result property="codigo_departamento" column="codigo_departamento" />
+		<result property="codigo_provincia" column="codigo_provincia" />
+		<result property="codigo_distrito" column="codigo_distrito" />
+	</resultMap>
+
+	<!-- RESULT PARENTESCO -->
+	<resultMap type="com.demo.model.Parentesco" id="resultParentesco">
+		<id property="id_parentesco" column="id_parentesco" />
+		<result property="no_parentesco" column="no_parentesco" />
+		<result property="il_activo" column="il_activo" />
+	</resultMap>
+
+	<!-- RESULT PACIENTE -->
+	<resultMap id="resultPaciente" type="com.demo.model.Paciente">
+		<id property="id_paciente" column="id_paciente" jdbcType="INTEGER"/>
+		<result property="no_docide" column="no_docide" jdbcType="VARCHAR"/>
+		<result property="no_apepat" column="no_apepat" jdbcType="VARCHAR"/>
+		<result property="no_apemat" column="no_apemat" jdbcType="VARCHAR"/>
+		<result property="no_nombres" column="no_nombres" jdbcType="VARCHAR"/>
+		<result property="fe_nacimiento" column="fe_nacimiento" jdbcType="VARCHAR"/>
+		<result property="no_lugar_nacimiento" column="no_lugar_nacimiento" jdbcType="VARCHAR"/>
+		<result property="no_direccion" column="no_direccion" jdbcType="VARCHAR"/>
+		<association property="id_sexo"  column="id_sexo" select="getSexo" jdbcType="INTEGER"/>
+		<association property="id_tipo_docide"  column="id_tipo_docide" select="getTipoDocumento" jdbcType="INTEGER"/>
+		<association property="co_ubigeo"  column="co_ubigeo" select="getUbigeo" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<!-- OBTENER DATOS TABLA SEXO -->
+	<select id="getSexo" resultType="sexo" resultMap="resultSexo" parameterType="int">
+		SELECT * FROM "Admision".tc_sexo WHERE id_sexo = #{id_sexo}
+	</select>
+	<select id="getAllSexo" resultType="sexo" resultMap="resultSexo" >
+		SELECT * FROM "Admision".tc_sexo
+	</select>
+
+	<!-- OBTENER DATOS TABLA TIPO DOCUMENTO IDENTIDAD -->
+	<select id="getTipoDocumento" resultType="tipoDoc" resultMap="resultTipoDoc" parameterType="Integer">
+		SELECT * FROM "Admision".tc_tipo_documento_identidad WHERE id_tipo_documento_identidad = #{id_tipo_docide}
+	</select>
+	<select id="getAllTipoDocumento" resultType="tipoDoc" resultMap="resultTipoDoc">
+		SELECT * FROM "Admision".tc_tipo_documento_identidad
+	</select>
+
+	<!-- OBTENER DATOS TABLA UBIGEO -->
+	<select id="getUbigeo" resultType="ubigeo" resultMap="resultUbigeo" parameterType="java.lang.String">
+		SELECT * FROM "Admision".tc_ubigeo WHERE codigo_ubigeo = #{co_ubigeo}
+	</select>
+	<select id="getAllUbigeo" resultType="ubigeo" resultMap="resultUbigeo">
+		SELECT * FROM "Admision".tc_ubigeo
+	</select>
+
+	<!-- OBTENER DATOS TABLA PARENTESCO -->
+	<select id="getAllParentesco" resultType="parentesco" resultMap="resultParentesco">
+		SELECT * FROM "Admision".tc_parentesco
+	</select>
+
+	<!-- CRUD PACIENTE -->
+	<select id="getAllPacientes" resultType="paciente" resultMap="resultPaciente">
+		SELECT * FROM "Admision".tb_paciente
+	</select>
+	<insert id="insertPaciente" parameterType="Paciente">
+		INSERT INTO "Admision".tb_paciente(id_tipo_docide, no_docide, no_apepat, no_apemat, no_nombres, id_sexo, fe_nacimiento, no_lugar_nacimiento, no_direccion, co_ubigeo)
+		VALUES(#{id_tipo_docide.id_tipo_documento_identidad}, #{no_docide}, #{no_apepat}, #{no_apemat}, #{no_nombres}, #{id_sexo.id_sexo}, #{fe_nacimiento}, #{no_lugar_nacimiento}, #{no_direccion}, #{co_ubigeo.codigo_ubigeo})
+		RETURNING id_paciente;
+	</insert>
+	<update id="updatePaciente" parameterType="paciente">
+		UPDATE "Admision".tb_paciente SET id_tipo_docide = #{id_tipo_docide.id_tipo_documento_identidad}, no_docide = #{no_docide}, no_apepat = #{no_apepat}, no_apemat = #{no_apemat}, no_nombres = #{no_nombres}, id_sexo = #{id_sexo.id_sexo}, fe_nacimiento = #{fe_nacimiento}, no_lugar_nacimiento = #{no_lugar_nacimiento}, no_direccion = #{no_direccion}, co_ubigeo = #{co_ubigeo.codigo_ubigeo}
+		WHERE id_paciente = #{id_paciente};
+	</update>
+	<delete id="deletePaciente" parameterType="int">
+		DELETE FROM "Admision".tb_paciente WHERE id_paciente = #{id_paciente}
+	</delete>
+	<select id="findById" parameterType="int" resultType="paciente" resultMap="resultPaciente">
+		SELECT * FROM "Admision".tb_paciente WHERE id_paciente = #{id_paciente}
+	</select>
+
+</mapper>
